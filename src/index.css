@@ -1,0 +1,38 @@
+:root {
+  font-family: 'Comic Sans MS', cursive, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light;
+  color: #213547;
+  background-color: #f8f0ff;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+h1, h2, h3 {
+  color: #6b46c1;
+}
+
+ul {
+  list-style-position: inside;
+  padding-left: 1rem;
+}
+
+li {
+  margin: 0.5rem 0;
+}
