@@ -75,6 +75,7 @@ const Button = styled(motion.button)`
 
 function App() {
   const [input, setInput] = useState('')
+  const [apiKey, setApiKey] = useState('')
   const [translation, setTranslation] = useState('')
   const [tips, setTips] = useState([])
   const [isLoading, setIsLoading] = useState(false)
@@ -114,15 +115,15 @@ function App() {
 
   const translateText = async () => {
     if (!input.trim()) return
+    if (!apiKey.trim()) {
+      setError('Please enter your API key')
+      return
+    }
 
     setIsLoading(true)
     setError('')
     
     try {
-      const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-      if (!apiKey) {
-        throw new Error('API key not found. Please check your environment variables.')
-      }
       const prompt = `
         Act as a helpful teacher. Given this text written by a child learning to spell:
         "${input}"
@@ -177,6 +178,13 @@ function App() {
   return (
     <Container>
       <Title>✨ Skedword Translator 🌈</Title>
+      
+      <InputArea
+        value={apiKey}
+        onChange={(e) => setApiKey(e.target.value)}
+        placeholder="Enter your Gemini API key here"
+        style={{ marginBottom: '1rem' }}
+      />
       
       <InputArea
         value={input}
