@@ -73,6 +73,57 @@ const Button = styled(motion.button)`
   }
 `
 
+const APIKeySection = styled(motion.div)`
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  z-index: 1000;
+`
+
+const APIKeyInput = styled.input`
+  width: 100%;
+  padding: 0.5rem;
+  border: 2px solid #ffd700;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  &:focus {
+    outline: none;
+    border-color: #6b46c1;
+  }
+`
+
+const MinimizeButton = styled.button`
+  background: none;
+  border: none;
+  color: #6b46c1;
+  cursor: pointer;
+  font-size: 0.8rem;
+  padding: 0;
+  &:hover {
+    text-decoration: underline;
+  }
+`
+
+const ExpandButton = styled(motion.button)`
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: #6b46c1;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-size: 0.8rem;
+  z-index: 1000;
+`
+
 function App() {
   const [input, setInput] = useState('')
   const [apiKey, setApiKey] = useState('')
@@ -80,6 +131,8 @@ function App() {
   const [tips, setTips] = useState([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
+  const [isAPIKeyVisible, setIsAPIKeyVisible] = useState(true)
+  const [isAPIKeySaved, setIsAPIKeySaved] = useState(false)
 
   const callGeminiAPI = async (prompt, apiKey) => {
     const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent?key=' + apiKey, {
@@ -175,16 +228,57 @@ function App() {
     }
   }
 
+  const handleAPIKeyChange = (e) => {
+    setApiKey(e.target.value)
+    setIsAPIKeySaved(false)
+  }
+
+  const saveAPIKey = () => {
+    if (apiKey.trim()) {
+      setIsAPIKeySaved(true)
+      setIsAPIKeyVisible(false)
+    }
+  }
+
   return (
     <Container>
+      <AnimatePresence>
+        {isAPIKeyVisible ? (
+          <APIKeySection
+            initial={{ x: 300 }}
+            animate={{ x: 0 }}
+            exit={{ x: 300 }}
+          >
+            <h4 style={{ margin: '0 0 0.5rem 0' }}>API Key</h4>
+            <APIKeyInput
+              type="password"
+              value={apiKey}
+              onChange={handleAPIKeyChange}
+              placeholder="Enter your Gemini API key"
+            />
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <MinimizeButton onClick={saveAPIKey}>
+                {isAPIKeySaved ? 'Update & Save' : 'Save'}
+              </MinimizeButton>
+              {isAPIKeySaved && (
+                <MinimizeButton onClick={() => setIsAPIKeyVisible(false)}>
+                  Minimize
+                </MinimizeButton>
+              )}
+            </div>
+          </APIKeySection>
+        ) : (
+          <ExpandButton
+            onClick={() => setIsAPIKeyVisible(true)}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            {isAPIKeySaved ? '🔑 Update API Key' : '🔑 Add API Key'}
+          </ExpandButton>
+        )}
+      </AnimatePresence>
+
       <Title>✨ Skedword Translator 🌈</Title>
-      
-      <InputArea
-        value={apiKey}
-        onChange={(e) => setApiKey(e.target.value)}
-        placeholder="Enter your Gemini API key here"
-        style={{ marginBottom: '1rem' }}
-      />
       
       <InputArea
         value={input}
@@ -196,9 +290,9 @@ function App() {
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
         onClick={translateText}
-        disabled={!input.trim() || isLoading}
+        disabled={!input.trim() || isLoading || !isAPIKeySaved}
       >
-        Translate! 🚀
+        {!isAPIKeySaved ? 'Add API Key to Start' : 'Translate! 🚀'}
       </Button>
 
       <AnimatePresence>
